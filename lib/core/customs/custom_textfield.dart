@@ -221,7 +221,7 @@ class _CustomBorderedTextFormFieldState
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Colors.blue, width: 2.0),
+                  borderSide: const BorderSide(),
                 ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -229,7 +229,7 @@ class _CustomBorderedTextFormFieldState
                 ),
                 focusedErrorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                  borderSide: BorderSide(),
                 ),
                 prefixIcon: widget.prefixIcon,
                 suffixIcon:
@@ -478,7 +478,7 @@ class _FlexibleBorderedTextFieldState extends State<FlexibleBorderedTextField> {
               counterText: '',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.blue),
+                borderSide: const BorderSide(),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
