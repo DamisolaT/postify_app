@@ -1,11 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_svg/svg.dart';
 import 'package:postify_app/core/constants/validator.dart';
 import 'package:postify_app/core/customs/custom_textfield.dart';
 import 'package:postify_app/core/utils/app_assets.dart';
 import 'package:postify_app/core/utils/app_button.dart';
+import 'package:postify_app/navigator/route.dart';
+import 'package:postify_app/view/auth/firebase_auth_impl/firebase_auth_service.dart';
+
+import 'package:postify_app/widgets/social_media.dart';
+
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -15,6 +21,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  final FirebaseAuthServices _auth = FirebaseAuthServices();
    final _userController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -84,9 +91,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 SizedBox(height: 30),
                 AppButton(
                   text: 'Register',
-                  onPressed: () {
-                    
-                  },
+                  onPressed: _signUp,
                   color: Colors.black,
                   textStyle: TextStyle(color: Colors.white),
                 ),
@@ -146,29 +151,28 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
-}
+   void _signUp() async {
+    // ignore: unused_local_variable
+    String name = _userController.text.trim();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    // ignore: unused_local_variable
+    String comfirm = _confirmPasswordController.text.trim();
 
-class SocialIcons extends StatelessWidget {
-  const SocialIcons({
-    super.key,
-    required this.icon,
-  });
+    if (_formKey.currentState!.validate()) {
+      User? user = await _auth.signUpWithEmailAndPassword(email, password);
 
-  final Widget icon; 
+      if (!mounted) return;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 105.w,
-      height: 56.h,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Center(
-        child: icon,
-      ),
-    );
+      if (user != null) {
+       Navigator.pushReplacementNamed(context, AppRouteStrings.postsPage);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration failed. Try again.')),
+        );
+      }
+    }
   }
 }
+
+

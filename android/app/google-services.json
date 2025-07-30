@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "388128570387",
+    "project_id": "postify-app-project",
+    "storage_bucket": "postify-app-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:388128570387:android:d90148aa20dde3021353e6",
+        "android_client_info": {
+          "package_name": "com.example.postify_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDa6gRNYoS1SwC1P38AqPWukXJ_HcEXH5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

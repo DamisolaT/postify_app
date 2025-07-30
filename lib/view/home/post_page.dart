@@ -19,12 +19,12 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void initState() {
     super.initState();
-    postsFuture = apiService.fetchPosts();
+    postsFuture = apiService.fetchData();
   }
 
   void _refreshPosts() {
     setState(() {
-      postsFuture = apiService.fetchPosts();
+      postsFuture = apiService.fetchData();
     });
   }
 
@@ -146,7 +146,7 @@ class _PostsPageState extends State<PostsPage> {
               );
 
               try {
-                await apiService.createPost(newPost);
+                await apiService.createData(newPost);
                 setState(() {
                   localPosts.insert(0, newPost);
                 });
@@ -200,7 +200,7 @@ class _PostsPageState extends State<PostsPage> {
               );
 
               try {
-                await apiService.updatePost(post.id!, updatedPost);
+                await apiService.updateData(post.id!, updatedPost);
 
                 setState(() {
                   final index = localPosts.indexWhere((p) => p.id == post.id);
@@ -238,7 +238,7 @@ class _PostsPageState extends State<PostsPage> {
             onPressed: () async {
               Navigator.pop(context);
               try {
-                await apiService.deletePost(postId);
+                await apiService.deleteData(postId);
 
                 setState(() {
                   localPosts.removeWhere((p) => p.id == postId);

@@ -1,11 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_svg/svg.dart';
 import 'package:postify_app/core/constants/validator.dart';
 import 'package:postify_app/core/customs/custom_textfield.dart';
 import 'package:postify_app/core/utils/app_assets.dart';
 import 'package:postify_app/core/utils/app_button.dart';
+import 'package:postify_app/navigator/route.dart';
+import 'package:postify_app/view/auth/firebase_auth_impl/firebase_auth_service.dart';
+
+import 'package:postify_app/widgets/social_media.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,10 +22,17 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+ final FirebaseAuthServices _auth = FirebaseAuthServices();
+  
   final _formKey = GlobalKey<FormState>();
+  // final String? errorText;
 
+
+
+  
   @override
   void dispose() {
+    
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -82,9 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 30),
                 AppButton(
                   text: 'Login',
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/posts_page');
-                  },
+                  onPressed: _signIn,
                   color: Colors.black,
                   textStyle: TextStyle(color: Colors.white),
                 ),
@@ -144,29 +154,34 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-}
 
-class SocialIcons extends StatelessWidget {
-  const SocialIcons({
-    super.key,
-    required this.icon,
-  });
 
-  final Widget icon; 
+  void _signIn() async {
+  
+  String email = _emailController.text.trim();
+  String password = _passwordController.text.trim();
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 105.w,
-      height: 56.h,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Center(
-        child: icon,
-      ),
-    );
+  if (_formKey.currentState!.validate()) {
+    User? user = await _auth.signInWithEmailAndPassword(email, password);
+    if (user != null) {
+      
+      Navigator.pushReplacementNamed(context, AppRouteStrings.postsPage);
+    } else {
+      
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed. Please try again.')),
+      );
+    }
   }
 }
+}
+
+
+
+  
+
+
+
+   
+
