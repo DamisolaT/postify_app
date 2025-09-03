@@ -22,6 +22,12 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
+
+               <!-- Add Google Sign-In meta-data -->
+            <meta-data
+              android:name="com.google.android.gms.client_id"
+              android:value="388128570387-vbpcqaf1tkmt18l96i2bk0log4oikm9r.apps.googleusercontent.com"/>
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

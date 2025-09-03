@@ -1,16 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:flutter_svg/svg.dart';
 import 'package:postify_app/core/constants/validator.dart';
 import 'package:postify_app/core/customs/custom_textfield.dart';
 import 'package:postify_app/core/utils/app_assets.dart';
 import 'package:postify_app/core/utils/app_button.dart';
 import 'package:postify_app/navigator/route.dart';
-import 'package:postify_app/view/auth/firebase_auth_impl/firebase_auth_service.dart';
-
 import 'package:postify_app/widgets/social_media.dart';
+import 'package:postify_app/view/auth/firebase_auth_impl/firebase_auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,17 +20,11 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
- final FirebaseAuthServices _auth = FirebaseAuthServices();
-  
+  final FirebaseAuthServices _auth = FirebaseAuthServices();
   final _formKey = GlobalKey<FormState>();
-  // final String? errorText;
 
-
-
-  
   @override
   void dispose() {
-    
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -76,12 +68,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 15),
                 Row(
                   children: [
-                    Spacer(),
+                    const Spacer(),
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(context, '/forgot_password_screen');
                       },
-                      child: Text(
+                      child: const Text(
                         'Forgot Password?',
                         style: TextStyle(
                           fontSize: 14,
@@ -91,19 +83,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 AppButton(
                   text: 'Login',
                   onPressed: _signIn,
                   color: Colors.black,
-                  textStyle: TextStyle(color: Colors.white),
+                  textStyle: const TextStyle(color: Colors.white),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Row(
-                  children: [
+                  children: const [
                     Expanded(child: Divider(color: Colors.grey, thickness: 1)),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
                       child: Text(
                         'Or Login with',
                         style: TextStyle(color: Colors.grey),
@@ -112,41 +104,66 @@ class _LoginScreenState extends State<LoginScreen> {
                     Expanded(child: Divider(color: Colors.grey, thickness: 1)),
                   ],
                 ),
-                SizedBox(height: 22),
+                const SizedBox(height: 22),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    SocialIcons(icon: SvgPicture.asset(AppAssets.facebookSvg),),
-                    SizedBox(width: 8,),
-                    SocialIcons(icon: SvgPicture.asset(AppAssets.googleSvg),),
-                    SizedBox(width: 8,),
-                    SocialIcons(icon: SvgPicture.asset(AppAssets.appleSvg),),
+                    SocialIcons(icon: SvgPicture.asset(AppAssets.facebookSvg)),
+                    GestureDetector(
+                      onTap: () async {
+                        try {
+                          // Force sign out first to always show the account picker
+                          await _auth.signOut();
+
+                          final userCredential =
+                              await _auth.signInWithGoogle();
+
+                          if (userCredential != null) {
+                            Navigator.pushReplacementNamed(
+                                // ignore: use_build_context_synchronously
+                                context, AppRouteStrings.postsPage);
+                          }
+                        } catch (e) {
+                          // ignore: use_build_context_synchronously
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('Google Sign-In failed: ${e.toString()}'),
+                            ),
+                          );
+                        }
+                      },
+                      child: SocialIcons(
+                        icon: SvgPicture.asset(AppAssets.googleSvg),
+                      ),
+                    ),
+                    SocialIcons(icon: SvgPicture.asset(AppAssets.appleSvg)),
                   ],
                 ),
-                Spacer(),
+                const Spacer(),
                 Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Don’t have an account? ",
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            
-                          },
-                          child: const Text(
-                            "Register Now ",
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Don’t have an account? ",
+                      style: TextStyle(fontSize: 14),
                     ),
-                    SizedBox(height: 30,)
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/register_screen');
+                      },
+                      child: const Text(
+                        "Register Now ",
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -155,33 +172,19 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
   void _signIn() async {
-  
-  String email = _emailController.text.trim();
-  String password = _passwordController.text.trim();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
 
-  if (_formKey.currentState!.validate()) {
-    User? user = await _auth.signInWithEmailAndPassword(email, password);
-    if (user != null) {
-      
-      Navigator.pushReplacementNamed(context, AppRouteStrings.postsPage);
-    } else {
-      
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed. Please try again.')),
-      );
+    if (_formKey.currentState!.validate()) {
+      User? user = await _auth.signInWithEmailAndPassword(email, password);
+      if (user != null) {
+        Navigator.pushReplacementNamed(context, AppRouteStrings.postsPage);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login failed. Please try again.')),
+        );
+      }
     }
   }
 }
-}
-
-
-
-  
-
-
-
-   
-

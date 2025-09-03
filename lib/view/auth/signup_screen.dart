@@ -9,9 +9,9 @@ import 'package:postify_app/core/utils/app_assets.dart';
 import 'package:postify_app/core/utils/app_button.dart';
 import 'package:postify_app/navigator/route.dart';
 import 'package:postify_app/view/auth/firebase_auth_impl/firebase_auth_service.dart';
+import 'package:postify_app/view/auth/firestore_service.dart';
 
 import 'package:postify_app/widgets/social_media.dart';
-
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -22,10 +22,10 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final FirebaseAuthServices _auth = FirebaseAuthServices();
-   final _userController = TextEditingController();
+  final _userController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-   final _confirmPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -54,12 +54,12 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 32),
                 CustomBorderedTextFormField(
-                      title: '',
-                      hintText: "Username",
+                  title: '',
+                  hintText: "Username",
 
-                      controller: _userController,
-                    ),
-                    SizedBox(height: 12,),
+                  controller: _userController,
+                ),
+                SizedBox(height: 12),
                 CustomBorderedTextFormField(
                   title: '',
                   hintText: "Email",
@@ -79,22 +79,25 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 12),
                 CustomBorderedTextFormField(
-                      title: '',
-                      hintText: "Confirm password",
-                      validator:
-                          (value) => FormValidator.validatePassword(value),
-                      obscureText: true,
+                  title: '',
+                  hintText: "Confirm password",
+                  validator: (value) => FormValidator.validatePassword(value),
+                  obscureText: true,
 
-                      controller: _confirmPasswordController,
-                    ),
-               
+                  controller: _confirmPasswordController,
+                ),
+
                 SizedBox(height: 30),
                 AppButton(
                   text: 'Register',
+                  color: Colors.blue,
+                  textStyle: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                   onPressed: _signUp,
-                  color: Colors.black,
-                  textStyle: TextStyle(color: Colors.white),
                 ),
+
                 SizedBox(height: 30),
                 Row(
                   children: [
@@ -113,37 +116,35 @@ class _SignupScreenState extends State<SignupScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    SocialIcons(icon: SvgPicture.asset(AppAssets.facebookSvg),),
-                    SizedBox(width: 8,),
-                    SocialIcons(icon: SvgPicture.asset(AppAssets.googleSvg),),
-                    SizedBox(width: 8,),
-                    SocialIcons(icon: SvgPicture.asset(AppAssets.appleSvg),),
+                    SocialIcons(icon: SvgPicture.asset(AppAssets.facebookSvg)),
+                    SizedBox(width: 8),
+                    SocialIcons(icon: SvgPicture.asset(AppAssets.googleSvg)),
+                    SizedBox(width: 8),
+                    SocialIcons(icon: SvgPicture.asset(AppAssets.appleSvg)),
                   ],
                 ),
                 Spacer(),
                 Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Already have an account? ",
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            
-                          },
-                          child: const Text(
-                            "Login Now  ",
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Already have an account? ",
+                      style: TextStyle(fontSize: 14),
                     ),
-                    SizedBox(height: 30,)
+                    GestureDetector(
+                      onTap: () {},
+                      child: const Text(
+                        "Login Now  ",
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30),
               ],
             ),
           ),
@@ -151,13 +152,13 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
-   void _signUp() async {
-    // ignore: unused_local_variable
+
+
+  void _signUp() async {
     String name = _userController.text.trim();
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
-    // ignore: unused_local_variable
-    String comfirm = _confirmPasswordController.text.trim();
+    String confirm = _confirmPasswordController.text.trim();
 
     if (_formKey.currentState!.validate()) {
       User? user = await _auth.signUpWithEmailAndPassword(email, password);
@@ -165,7 +166,11 @@ class _SignupScreenState extends State<SignupScreen> {
       if (!mounted) return;
 
       if (user != null) {
-       Navigator.pushReplacementNamed(context, AppRouteStrings.postsPage);
+        // Save user info to Firestore after successful sign up
+        await FirestoreService.saveUserInfo(name, email);
+
+        // Navigate to Posts Page
+        Navigator.pushReplacementNamed(context, AppRouteStrings.postsPage);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Registration failed. Try again.')),
@@ -174,5 +179,3 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 }
-
-
